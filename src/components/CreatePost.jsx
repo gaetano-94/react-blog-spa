@@ -6,52 +6,102 @@ const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const CreatePost = ({ categories, onPostCreated }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [category, setCategory] = useState(categories[0]?.id || '');
+  const [tags, setTags] = useState('');
+  const [image, setImage] = useState(null);
+  const [error, setError] = useState('');
 
-  const handleCreatePost = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('category', category);
+    formData.append(
+      'tags',
+      tags.split(',').map((tag) => tag.trim())
+    );
+    if (image) {
+      formData.append('image', image);
+    }
+
     try {
-      const response = await axios.post(`${apiUrl}/api/posts`, {
-        title,
-        content,
-        category: selectedCategory,
-        // Assuming tags are handled separately
-      });
-      onPostCreated(response.data);
+      const { data: newPost } = await axios.post(
+        `${apiUrl}/api/posts`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      onPostCreated(newPost);
       setTitle('');
       setContent('');
-      setSelectedCategory('');
+      setCategory(categories[0]?.id || '');
+      setTags('');
+      setImage(null);
     } catch (error) {
+      setError('Errore durante la creazione del post.');
       console.error('Errore durante la creazione del post:', error);
     }
   };
 
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
   return (
-    <div className="create-post">
-      <h2>Crea un nuovo Post</h2>
-      <input
-        type="text"
-        placeholder="Titolo"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <textarea
-        placeholder="Contenuto"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-      />
-      <select
-        value={selectedCategory}
-        onChange={(e) => setSelectedCategory(e.target.value)}
-      >
-        <option value="">Seleziona una categoria</option>
-        {categories.map((category) => (
-          <option key={category.id} value={category.id}>
-            {category.name}
-          </option>
-        ))}
-      </select>
-      <button onClick={handleCreatePost}>Crea Post</button>
-    </div>
+    <form className="create-post-form" onSubmit={handleSubmit}>
+      <h2>Crea Nuovo Post</h2>
+      <div>
+        <label>Titolo:</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label>Contenuto:</label>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label>Categoria:</label>
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          required
+        >
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label>Tags (separati da virgola):</label>
+        <input
+          type="text"
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>Immagine:</label>
+        <input type="file" onChange={handleImageChange} />
+      </div>
+      <button type="submit">Crea Post</button>
+      {error && <p className="error">{error}</p>}
+    </form>
   );
 };
 
