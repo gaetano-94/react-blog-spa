@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import PostCard from '../components/PostCard';
 import CreatePost from '../components/CreatePost';
 
@@ -44,15 +45,16 @@ const ElencoPost = () => {
         {posts?.length === 0 && 'Nessun post trovato.'}
         {posts?.length > 0 &&
           posts.map((post) => (
-            <PostCard
-              key={post.id}
-              image={post.image}
-              title={post.title}
-              content={post.content}
-              category={post.category}
-              tags={post.tags}
-              published={false}
-            />
+            <Link to={`/blog/${post.id}`} key={post.id}>
+              <PostCard
+                image={post.image}
+                title={post.title}
+                content={post.content}
+                category={post.category}
+                tags={post.tags}
+                published={false}
+              />
+            </Link>
           ))}
       </div>
     </>

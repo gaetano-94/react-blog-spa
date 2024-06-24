@@ -30,6 +30,11 @@ const PostCard = ({ image, title, content, tags, category, published }) => {
         <p className={!content ? 'italic' : ''}>
           {content || 'Descrizione non disponibile'}
         </p>
+        {published && (
+          <button>
+            Aggiungi al Carrello <CartIcon />
+          </button>
+        )}
       </div>
     </div>
   );

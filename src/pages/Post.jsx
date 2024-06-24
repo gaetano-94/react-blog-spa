@@ -33,7 +33,7 @@ const Post = () => {
         content={post.content}
         category={post.category}
         tags={post.tags}
-        published={true}
+        published={true} // Assuming this is the detailed view of a published post
       />
     </div>
   );
