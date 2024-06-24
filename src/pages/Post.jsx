@@ -8,12 +8,14 @@ const apiUrl = import.meta.env.VITE_BASE_API_URL;
 const Post = () => {
   const { postId } = useParams();
   const [post, setPost] = useState(null);
+  const [error, setError] = useState(null);
 
   const fetchPost = async () => {
     try {
       const { data } = await axios.get(`${apiUrl}/api/posts/${postId}`);
       setPost(data);
     } catch (error) {
+      setError('Articolo non trovato');
       console.error("Errore durante il recupero dell'articolo:", error);
     }
   };
@@ -22,6 +24,7 @@ const Post = () => {
     fetchPost();
   }, [postId]);
 
+  if (error) return <div>{error}</div>;
   if (!post) return <div>Caricamento dell'articolo...</div>;
 
   return (

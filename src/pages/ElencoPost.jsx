@@ -45,7 +45,7 @@ const ElencoPost = () => {
         {posts?.length === 0 && 'Nessun post trovato.'}
         {posts?.length > 0 &&
           posts.map((post) => (
-            <Link to={`/blog/${post.id}`} key={post.id}>
+            <Link to={`/posts/${post.id}`} key={post.id}>
               <PostCard
                 image={post.image}
                 title={post.title}
